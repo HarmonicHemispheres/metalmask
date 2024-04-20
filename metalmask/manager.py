@@ -20,7 +20,7 @@ class Manager:
         self.oa = AI(openai_api_key)
       
 
-    def is_sensitive(self, value: Any) -> bool:
+    def is_sensitive(self, value: Any, is_raw: bool = False) -> bool:
 
         system_message = f"""
 You are an AI assistant that determines if a given value contains sensitive information.
@@ -37,9 +37,12 @@ ALWAYS consider the following datatypes sensitive:
 - username
 - password
 - ip address
+
+IF <IS_RAW>True</IS_RAW>: then data is not masked
+IF <IS_RAW>False</IS_RAW>: then data IS masked and digits are N and alpha characters are C
         """
 
-        result = self.oa.ask(prompt=f"<RAW_DATA>{value}</RAW_DATA>", sysmsg=system_message)
+        result = self.oa.ask(prompt=f"<RAW_DATA>{value}</RAW_DATA><IS_RAW>{is_raw}</IS_RAW>", sysmsg=system_message)
 
         if "<RESULT>TRUE</RESULT>" in result:
             return True
@@ -49,13 +52,16 @@ ALWAYS consider the following datatypes sensitive:
             raise Exception("Its unclear if the value is sensitive or not!")
         
 
-    def _mask(self, value: Any, replace_char: str = '*') -> str:
+    def _mask(self, value: Any, replace_num_char: str = 'N', replace_alpha_char: str = 'C') -> str:
 
         v_text = str(value)
 
         for c in v_text:
             if c in self.CHAR_REPLACE_LIST:
-                v_text = v_text.replace(c, replace_char)
+                if c.isdigit():
+                    v_text = v_text.replace(c, replace_num_char)
+                elif c.isalpha():
+                    v_text = v_text.replace(c, replace_alpha_char)
 
         return v_text
     
