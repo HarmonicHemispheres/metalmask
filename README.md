@@ -1,5 +1,4 @@
 ![alt text](banner.png)
-_PROMPT: _
 
 # MetalMask
 A Data Masking framework that ai can understand. DataMask includes tools for masking sensitive data as well as searching strings for data that is sensitive. 
