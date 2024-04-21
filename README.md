@@ -1,6 +1,6 @@
 ![alt text](banner.png)
 
-# MetalMask
+# 🛡️✨ MetalMask ✨🛡️
 A Data Masking framework that ai can understand. DataMask includes tools for masking sensitive data as well as searching strings for data that is sensitive. 
 
 <br>
