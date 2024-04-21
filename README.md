@@ -1,46 +1,50 @@
 ![alt text](banner.png)
-
+_PROMPT: _
 
 # MetalMask
-A Data Masking framework that ai can understand
-
-<br>
-
-![alt text](image.png)
+A Data Masking framework that ai can understand. DataMask includes tools for masking sensitive data as well as searching strings for data that is sensitive. 
 
 <br>
 
 # Python Package
 
 ```python
-import metalmask as mm
+from metalmask import MetalMask, AI_MODELS, MaskMode
 
-# -- configure sensitive data configuration
-mm.CFG.openai_api_key = "sk-........."
-mm.CFG.sensitive_types = [
-    "social security number",
-    "email",
-    "username",
-    ""
-]
+# -- setup
+metal = MetalMask(
+    openai_api_key = "sk-.........",
+    openai_model = AI_MODELS.GPT_4_TURBO
+)
 
-# -- check if value should be masked
-need_to_mask_yes = mm.is_sensitive("johnyp@gmail.com")
-need_to_mask_no  = mm.is_sensitive("just some random string of data")
+# -----------------
+# MASK (BASIC)
+# NOTE.... simply masks the data locally. alpha chars with C and digits with N.
+# -----------------
+v = "243-45-4433"
+v_mask = metal.mask(v)
+# v_mask RESULT => "NNN-NN-NNNN"
 
-# -- mask a single value
-ssn = "234-24-2323"
-mask_ssn = mm.mask(data_ssn)
+# -----------------
+# MASK (ONLY SENSITIVE DATA)
+# -----------------
+v = "here is a string where i have a ssn to mask: 243-45-4433"
+v_mask = metal.mask(v, mode=MaskMode.sensitive_only)
+# v_mask RESULT => "here is a string where i have a ssn to mask: NNN-NN-NNNN"
 
-# -- mask a row
+# -----------------
+# IS_SENSITIVE
+# -----------------
+v = "2300 Harrison St, San Francisco, CA 94110"
+is_pii = metal.is_sensitive(v, types=metal.DEFAULT_SENSITIVE_DATA)
+# is_pii RESULT =>
+# {
+#    "contains_sensitive_data": true,
+#    "data_mode": "raw",
+#    "type": "street address",
+#    "step_by_step": "The provided data '2300 Harrison St, San Francisco, CA 94110' resembles a typical street address format with a street name, city, and zip code. Cross-referencing with the sensitive types list in the protocol, 'street address' is listed as sensitive information. The data is not masked as it contains readable text."
+# }
 
-# -- mask a column
-
-# -- mask a txt file
-
-# -- mask a dataframe
-
-# -- mask a json file 
 ```
 
 <br>

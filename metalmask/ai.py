@@ -1,11 +1,16 @@
 from openai import OpenAI
-
+import json
 
 class AI:
 
-    def __init__(self, opanai_api_key: str = None):
+    class models:
+        GPT_3_5_TURBO = "gpt-3.5-turbo"
+        GPT_4 = "gpt-4"
+        GPT_4_TURBO = "gpt-4-turbo"
+
+    def __init__(self, opanai_api_key: str = None, model: str = "gpt-3.5-turbo"):
         self.openai_api_key = opanai_api_key
-        self.model = "gpt-3.5-turbo"
+        self.model = model
 
         if isinstance(self.openai_api_key, str):
             self.oa = OpenAI(api_key=self.openai_api_key)
@@ -15,7 +20,7 @@ class AI:
     def system(self) -> str:
         return "You are a helpful AI assistant"
 
-    def ask(self, prompt: str, sysmsg: str = None, model: str = None) -> str:
+    def ask(self, prompt: str, sysmsg: str = None, model: str = None, json_mode: bool = False) -> str:
         
         if not sysmsg:
             sysmsg = self.system()
@@ -23,14 +28,24 @@ class AI:
         if not model:
             model = self.model
 
+        mode = None
+        if json_mode:
+            mode = { "type": "json_object" }
+
         response = self.oa.chat.completions.create(
             model=model,
             messages=[
                 {"role": "system", "content": sysmsg},
                 {"role": "user", "content": prompt}
-            ]
+            ],
+            response_format=mode,
+
             # n=1,
             # stop=None,
             # temperature=0.7,
         )
-        return response.choices[0].message.content
+
+        if json_mode:
+            return json.loads(response.choices[0].message.content)
+        else:
+            return response.choices[0].message.content
