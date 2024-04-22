@@ -45,18 +45,3 @@ is_pii = metal.is_sensitive(v, types=metal.DEFAULT_SENSITIVE_DATA)
 # }
 
 ```
-
-<br>
-
-
-# RULES
-### Framework
--  convert all non-alpha-numeric values to x
--  preserve length of original value
--  
--  
-
-
-### System Prompt
-```
-```
